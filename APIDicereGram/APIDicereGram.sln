@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIDicereGram", "APIDicereG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIDicereGram.Tests", "APIDicereGram.Tests\APIDicereGram.Tests.csproj", "{2BFE9B26-92C0-4812-887E-C4D149CDA1FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIDicereGram.Service", "APIDicereGram.Service\APIDicereGram.Service.csproj", "{8BF7E6C4-0F48-47BA-83B5-CDC8BE3C9B35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIDicereGram.Data", "APIDicereGram.Data\APIDicereGram.Data.csproj", "{C1A05031-E150-4375-BC15-78DF9ED3D3F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{2BFE9B26-92C0-4812-887E-C4D149CDA1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BFE9B26-92C0-4812-887E-C4D149CDA1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BFE9B26-92C0-4812-887E-C4D149CDA1FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BF7E6C4-0F48-47BA-83B5-CDC8BE3C9B35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BF7E6C4-0F48-47BA-83B5-CDC8BE3C9B35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BF7E6C4-0F48-47BA-83B5-CDC8BE3C9B35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BF7E6C4-0F48-47BA-83B5-CDC8BE3C9B35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1A05031-E150-4375-BC15-78DF9ED3D3F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1A05031-E150-4375-BC15-78DF9ED3D3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1A05031-E150-4375-BC15-78DF9ED3D3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1A05031-E150-4375-BC15-78DF9ED3D3F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
