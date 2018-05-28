@@ -30,7 +30,7 @@ namespace APIDicereGram.Data.Repositories
             MySqlDataReader dr = cmd.ExecuteReader();
             if(dr.Read())
             {
-                output = dr.ToString();
+                output = dr[0].ToString();
             }
             connection.Close();
             return output;
@@ -48,10 +48,27 @@ namespace APIDicereGram.Data.Repositories
 
         public async Task<bool> SaveHash(string phone, string hash)
         {
-            string query = "INSERT INTO user (phone, hash) VALUES('" + phone + "', '" + hash + "')";
+            bool exist = false;
+            string query1 = "SELECT * FROM user WHERE phone='" + phone + "'";
             connection.Open();
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.ExecuteNonQuery();
+            MySqlCommand cmd = new MySqlCommand(query1, connection);
+            MySqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                exist = true;
+            }
+            if(!exist)
+            {
+                string query = "INSERT INTO user (phone, hash) VALUES('" + phone + "', '" + hash + "')";
+                cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+            }
+            else
+            {
+                string query = "UPDATE user SET hash='" + hash + "' WHERE phone='" + phone + "')";
+                cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+            }
             connection.Close();
             return true;
         }

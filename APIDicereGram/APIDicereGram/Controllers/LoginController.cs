@@ -1,5 +1,4 @@
 ﻿using APIDicereGram.Service;
-using APIDicereGram.Service.IServices.APIDicereGram;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,40 +12,66 @@ using APIDicereGram.Service.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using APIDicereGram.Data.Repositories;
+using APIDicereGram.Models;
+using APIDicereGram.IControllers;
+using TeleSharp.TL;
 
 namespace APIDicereGram.Controllers
 {
     public class LoginController : ApiController, ILogin
     {
         LoginService _loginService = new LoginService();
+        LoginRepository _loginRepository = new LoginRepository();
 
         [HttpPost]
         [Route("login/auth")]
-        public string Auth(string phone, string code)
+        public async Task<string> Auth([FromBody] User user)
         {
-            ClientService _clientService = new ClientService();
+            ClientService _clientService = new ClientService(user.Phone);
             var client = _clientService.client;
-            string token = "";
-            
-            _loginService.Auth(phone, code, client);
-            if(client.IsUserAuthorized())
+            string token = "";            
+            TLUser usu;
+                        
+            if (!client.IsUserAuthorized())
             {
-                _loginService.SaveCode(phone, code);
-                _loginService.SaveContacts(phone, client);
-                token = _loginService.SaveToken(phone).Result;
+                await _loginService.Auth(user.Phone, user.Code, client);
+                await _loginService.SaveCode(user.Phone, user.Code);
+                //token = _loginService.SaveToken(user.Phone).Result;
+                //_loginService.SaveContacts(user.Phone, client);
+                return "Auth realizado correctamente";
             }
-            
-            return token;
+            else
+            {
+                usu = client.Session.TLUser;
+            }
+            return "Su usuario ya está autorizado";
         }
 
         [HttpPost]
         [Route("login")]
-        public string GetHash([FromBody]string phone)
+        public async Task<string> GetHash([FromBody] User user)
         {
-            ClientService _clientService = new ClientService();
+            ClientService _clientService = new ClientService(user.Phone);
             var client = _clientService.client;
-            var hash = _loginService.GetHash(phone, client);
-            return hash;
+            if(!client.IsUserAuthorized())
+            {
+                var hash = await _loginService.GetHash(user.Phone, client);
+                return hash;
+            }
+            return "Su usuario ya está autorizado";
+        }
+
+        [HttpPost]
+        [Route("contact")]
+        public async Task<string> GetContact([FromBody] User user)
+        {
+            ClientService _clientService = new ClientService(user.Phone);
+            var client = _clientService.client;
+            if(client.IsUserAuthorized())
+            {
+                 await _loginService.SaveContacts(user.Phone, client);
+            }
+            return "ok";
         }
     }
 }

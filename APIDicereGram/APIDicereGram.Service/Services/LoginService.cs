@@ -23,25 +23,28 @@ namespace APIDicereGram.Service.Services
             _loginRepository = new LoginRepository();
         }
 
-        public void Auth(string phone, string code, TelegramClient client)
+        public async Task Auth(string phone, string code, TelegramClient client)
         {
-            TLUser user;
-            string hash = _loginRepository.GetHash(phone).Result;
+            string hash = await _loginRepository.GetHash(phone);
             try
             {
+                if(!await client.IsPhoneRegisteredAsync(phone))
+                {
+                    var usu = Task.Run(() => client.SignUpAsync(phone, hash, code, "", ""));
+                    usu.Wait();
+                }
                 var u = Task.Run(() => client.MakeAuthAsync(phone, hash, code));
                 u.Wait();
-                user = u.Result;
             }            
             catch(FloodException flood)
             {
-                _loginRepository.SetLimit(Convert.ToInt32(flood.TimeToWait)).Wait();
+                await _loginRepository.SetLimit(Convert.ToInt32(flood.TimeToWait));
                 Thread.Sleep(flood.TimeToWait);
-                Auth(phone, code, client);
+                await Auth(phone, code, client);
             }
         }
         
-        public string GetHash(string phone, TelegramClient client)
+        public async Task<string> GetHash(string phone, TelegramClient client)
         {
             string h;
             try
@@ -49,16 +52,16 @@ namespace APIDicereGram.Service.Services
                 var hash = Task.Run(() => client.SendCodeRequestAsync(phone));
                 hash.Wait();
                 h = hash.Result;
-                _loginRepository.SaveHash(phone, hash.Result).Wait();
+                await _loginRepository.SaveHash(phone, hash.Result);
             }
             catch (FloodException flood)
             {
-                _loginRepository.SetLimit(Convert.ToInt32(flood.TimeToWait)).Wait();
+                await _loginRepository.SetLimit(Convert.ToInt32(flood.TimeToWait));
                 Thread.Sleep(flood.TimeToWait);
                 var hash = client.SendCodeRequestAsync(phone);
                 hash.Wait();
                 h = hash.Result;
-                _loginRepository.SaveHash(phone, hash.Result).Wait();
+                await _loginRepository.SaveHash(phone, hash.Result);
             }
             catch(Exception ex)
             {
@@ -72,7 +75,7 @@ namespace APIDicereGram.Service.Services
             bool output = false;
             try
             {
-                output = _loginRepository.SaveCode(phone, code).Result;
+                output = await _loginRepository.SaveCode(phone, code);
             }
             catch(SqlException ex)
             {
@@ -101,12 +104,12 @@ namespace APIDicereGram.Service.Services
                     };
                     Thread.Sleep(1000);
                     var userFull = client.SendRequestAsync<TLUserFull>(req);
-                    _loginRepository.SaveContacts(phone, cc.Id, cc.Phone, cc.FirstName, cc.LastName, cc.Status.ToString(), userFull.Result.Blocked, cc.AccessHash.Value);
+                    await _loginRepository.SaveContacts(phone, cc.Id, cc.Phone, cc.FirstName, cc.LastName, cc.Status.ToString(), userFull.Result.Blocked, cc.AccessHash.Value);
                 }
             }
             catch(FloodException flood)
             {
-                _loginRepository.SetLimit(Convert.ToInt32(flood.TimeToWait)).Wait();
+                await _loginRepository.SetLimit(Convert.ToInt32(flood.TimeToWait));
                 Thread.Sleep(flood.TimeToWait);
             }
             catch (SqlException ex)
@@ -121,9 +124,9 @@ namespace APIDicereGram.Service.Services
             string output = "";
             try
             {
-                output = _loginRepository.SaveToken(phone).Result;
+                output = await _loginRepository.SaveToken(phone);
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
                 return "Error acceso BD API";
             }
@@ -135,7 +138,7 @@ namespace APIDicereGram.Service.Services
             bool output = false;
             try
             {
-                output = _loginRepository.SetLimit(time).Result;
+                output = await _loginRepository.SetLimit(time);
             }
             catch (SqlException ex)
             {
@@ -149,7 +152,7 @@ namespace APIDicereGram.Service.Services
             bool output = false;
             try
             {
-                output = _loginRepository.CheckLimit().Result;
+                output = await _loginRepository.CheckLimit();
             }
             catch (SqlException ex)
             {

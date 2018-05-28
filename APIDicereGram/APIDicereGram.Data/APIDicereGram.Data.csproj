@@ -42,8 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection.cs" />
+    <Compile Include="IRepositories\IClientRepository.cs" />
     <Compile Include="IRepositories\ILoginRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ClientRepository.cs" />
     <Compile Include="Repositories\LoginRepository.cs" />
   </ItemGroup>
   <ItemGroup />
